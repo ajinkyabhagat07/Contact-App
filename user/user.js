@@ -18,8 +18,8 @@ class User{
     static ID = 0;
     static #AllAdmin = [];
     static #AllStaff = [];
-    constructor(UserID, firstName, lastName, isAdmin, isActive, contacts){
-        this.UserID = UserID;
+    constructor(userID, firstName, lastName, isAdmin, isActive, contacts){
+        this.userID = userID;
         this.firstName = firstName;
         this.lastName = lastName;
         this.isAdmin = isAdmin;
@@ -113,7 +113,7 @@ class User{
             
 
             for(let i=0; i<User.#AllStaff.length; i++){
-                if(User.#AllStaff[i].UserID == id){
+                if(User.#AllStaff[i].userID == id){
                     return User.#AllStaff[i];
                 }
             }
@@ -291,9 +291,16 @@ class User{
         if(id < 0){
             throw new Error("id should be greater than 0");
         }
-
+        
         let allContacts = this.contacts;
-        let reqContact = Contact.getContactByUsingId(id , allContacts);
+        let reqContact;
+        for(let i=0; i<allContacts.length; i++){
+            if(allContacts[i].getContactID() == id){
+                reqContact = allContacts[i];
+                break;
+            }
+        }
+        // let reqContact = Contact.getContactByUsingId(id , allContacts);
         return reqContact;
         
        } catch (error) {
@@ -310,22 +317,10 @@ class User{
 
     updateContactByid(id , parameterToUpdate, value){
         try {
-            if(this.isAdmin){
-                throw new Error("only staff can access the contact")
-            }
-            if(!this.isActive){
-                throw new Error("user is not active")
-            }
-              
-            if(typeof id != "number"){
-                throw new Error("id id invalid");
-            }
-            if(id < 0){
-                throw new Error("id should be greater than 0");
-            }
+            
             let foundContact = this.getContactById(id);
 
-            Contact.updateContactByUsingId(parameterToUpdate , value , foundContact);
+            foundContact.updateContactByUsingId(parameterToUpdate , value);
 
             return foundContact;
             
@@ -336,22 +331,10 @@ class User{
 
     deleteContactById(id){
         try {
-            if(this.isAdmin){
-                throw new Error("only staff can access the contact")
-            }
-            if(!this.isActive){
-                throw new Error("user is not active")
-            }
-              
-            if(typeof id != "number"){
-                throw new Error("id id invalid");
-            }
-            if(id < 0){
-                throw new Error("id should be greater than 0");
-            }
+           
 
             let foundContact = this.getContactById(id);
-            foundContact.isActive = false;
+            foundContact.deleteContactById();;
 
             
         } catch (error) {
@@ -360,43 +343,21 @@ class User{
         }
     }
 
+
     //create new contact details using staff Contact
     newContactDetails(contactID , number , email){
         try {
-            if(this.isAdmin){
-                throw new Error("only staff can create contact details")
-            }
-            if(!this.isActive){
-                throw new Error("inActive user cannot create contact details");
-            }
-            if(typeof contactID != "number"){
-                throw new Error("id is invalid")
-            }
-            if(contactID < 0){
-                throw new Error("id must be greater than 0");
-            }
 
-            if(typeof number != "number"){
-                throw new Error("invalid number")
-            }
-    
-            if(typeof email != "string"){
-                throw new Error("invalid email");
-            }
+            let staffContact = this.getContactById(contactID);
 
-            let allContacts = this.contacts;
-
-            
-            let staffContacts = Contact.getContactByUsingId(contactID , allContacts);
-
-            staffContacts.newContactByDetails(number , email);
+            staffContact.newContactByDetails(number , email);
         } catch (error) {
             console.log(error);
         }
     }
 
     //get All contacts details
-    getAllcontactDetails(ContactID){
+    getAllcontactDetails(contactID){
 
         try {
             if(this.isAdmin){
@@ -405,15 +366,9 @@ class User{
             if(!this.isActive){
                 throw new Error("inActive user cannot create contact details");
             }
-            if(typeof ContactID != "number"){
-                throw new Error("contact id is invalid")
-            }
-            
-            if(ContactID < 0){
-                throw new Error("contact id must be greater than 0");
-            }
-            let staffContacts = Contact.getContactByUsingId(ContactID , this.contacts);
-            let reqContactDetails = staffContacts.getAllcontactDetails();
+           
+            let staffContact = this.getContactById(contactID);
+            let reqContactDetails = staffContact.getAllcontactDetails();
             return reqContactDetails;
         } catch (error) {
             console.log(error);
@@ -423,7 +378,7 @@ class User{
     }
 
     //get contact details by id using staff = staff -> 3 array (that contact id) -> contact - detals id
-    getContactsDetailById(ContactID , ContactDetailsID){
+    getContactsDetailById(contactID , contactDetailsID){
         try {
             if(this.isAdmin){
                 throw new Error("only staff can access contact details")
@@ -431,21 +386,10 @@ class User{
             if(!this.isActive){
                 throw new Error("inActive user cannot create contact details");
             }
-            if(typeof ContactID != "number"){
-                throw new Error("contact id is invalid")
-            }
-            if(typeof ContactDetailsID != "number"){
-                throw new Error("contact Details id is invalid");
-            }
-            if(ContactID < 0){
-                throw new Error("contact id must be greater than 0");
-            }
-            if(ContactDetailsID < 0){
-                throw new Error("contact details id must be greater than 0");
-            }
-            let staffContacts = Contact.getContactByUsingId(ContactID , this.contacts);
             
-            let foundDetail = staffContacts.getContactDetails(ContactDetailsID);
+            let staffContact = this.getContactById(contactID);
+            
+            let foundDetail = staffContact.getContactDetails(contactDetailsID);
 
             return foundDetail;
 
@@ -455,30 +399,19 @@ class User{
     }
 
     //update contact details = contact id => [] = conatctdetailsid = details to updatte
-    upadetContactDetailsById(ContactID , ContactDetailsID, parameterToUpdate , value){
+    upadeteContactDetailsById(contactID , contactDetailID, parameterToUpdate , value){
         try {
             if(this.isAdmin){
-                throw new Error("only staff can create contact details")
+                throw new Error("only staff cannot update contact details")
             }
             if(!this.isActive){
-                throw new Error("inActive user cannot create contact details");
+                throw new Error("inActive user cannot update contact details");
             }
-            if(typeof ContactID != "number"){
-                throw new Error("contact id is invalid")
-            }
-            if(typeof ContactDetailsID != "number"){
-                throw new Error("contact Details id is invalid");
-            }
-            if(ContactID < 0){
-                throw new Error("contact id must be greater than 0");
-            }
-            if(ContactDetailsID < 0){
-                throw new Error("contact details id must be greater than 0");
-            }
+            
 
-            let staffContacts = Contact.getContactByUsingId(ContactID , this.contacts);
+            let staffContact = this.getContactById(contactID);
 
-            let updatedDetail = staffContacts.getupdatedContactDetails(ContactDetailsID , parameterToUpdate , value);
+            let updatedDetail = staffContact.getupdatedContactDetails(contactDetailID , parameterToUpdate , value);
 
             return updatedDetail;
 
@@ -492,29 +425,18 @@ class User{
 
 
     //delete contact details by using id - contactid ->  find that conatct array -> in that array find that specific contact details and remove from the array
-    deleteContactDetailsByID(ContactID , ContactDetailsID){
+    deleteContactDetailsByID(contactID , contactDetailsID){
         try {
             if(this.isAdmin){
-                throw new Error("only staff can create contact details")
+                throw new Error("only staff can delete contact details")
             }
             if(!this.isActive){
-                throw new Error("inActive user cannot create contact details");
+                throw new Error("inActive user cannot delete contact details");
             }
-            if(typeof ContactID != "number"){
-                throw new Error("contact id is invalid")
-            }
-            if(typeof ContactDetailsID != "number"){
-                throw new Error("contact Details id is invalid");
-            }
-            if(ContactID < 0){
-                throw new Error("contact id must be greater than 0");
-            }
-            if(ContactDetailsID < 0){
-                throw new Error("contact details id must be greater than 0");
-            }
-            //find the contact array
-            let staffContacts = Contact.getContactByUsingId(ContactID , this.contacts);
-            staffContacts.deleteContactDetails(ContactDetailsID);
+            
+            //find the contact 
+            let staffContact = this.getContactById(contactID);
+            staffContact.deleteContactDetails(contactDetailsID);
             
         } catch (error) {
             console.log(error);

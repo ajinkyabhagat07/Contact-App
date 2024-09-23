@@ -1,10 +1,15 @@
 
 
-class contactDetails{
+class ContactDetails{
     constructor(contactDetailID , number , email){
         this.contactDetailID = contactDetailID;
         this.number = number;
         this.email = email;
+    }
+
+    //getter id
+    getContactDetailID(){
+        return this.contactDetailID;
     }
 
 
@@ -27,7 +32,7 @@ class contactDetails{
             }
     
     
-            let newContact = new contactDetails(contactDetailID , number , email);
+            let newContact = new ContactDetails(contactDetailID , number , email);
             
             return newContact;
     
@@ -38,64 +43,23 @@ class contactDetails{
 
     }
 
-    static getContactDetails(contactdeID , AllContactsDetails){
-            try {
-                if(typeof contactdeID != "number"){
-                    throw new Error("contact Details id is invalid");
-                }
-                
-                if(contactdeID < 0){
-                    throw new Error("contact details id must be greater than 0");
-                }
-
-
-                for(let i=0; i<AllContactsDetails.length; i++){
-                    
-                    if(AllContactsDetails[i].contactDetailID == contactdeID){
-                        return AllContactsDetails[i];
-                    }
-                }
-
-                return null;
-                
-            } catch (error) {
-                throw error;
-            }
-    }
-
-    static deleteContactDetail(id , AllcontactDetails){
+    
+    updateDetails(parameterToUpdate , value){
         try {
-            if(typeof id != "number"){
-                throw new Error("contact Details id is invalid");
+            if(typeof parameterToUpdate != "string"){
+                throw new Error("parameter is invalid")
             }
-            
-            if(id < 0){
-                throw new Error("contact details id must be greater than 0");
-            }
-            if(AllcontactDetails.length < id){
-                throw new Error("id does not exist")
-            }
-        
-            let newDetails = AllcontactDetails.filter(contact => contact.contactDetailID != id);
-            return newDetails;
-        } catch (error) {
-            throw error;
-        }
-    }
-
-    static updateDetails(reqDetail , parameterToUpdate , value){
-        try {
             switch(parameterToUpdate){
                 case "number":
-                    reqDetail.updateNumber(value);
+                    this.updateNumber(value);
                     break;
                 case "email":
-                    reqDetail.updateEmail(value);
+                    this.updateEmail(value);
                     break;
                 default:
                     throw new Error("parametr is invalid");
             }
-            return reqDetail;
+            return this;
         } catch (error) {
             throw error;
         }
@@ -126,4 +90,4 @@ class contactDetails{
     }
 }
 
-module.exports = contactDetails;
+module.exports = ContactDetails;

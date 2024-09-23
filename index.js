@@ -73,11 +73,11 @@ console.log(staff1.getContactsDetailById(1 , 1));
 
 console.log("update contact 1 - details 1 - number ");
 
-console.log(staff1.upadetContactDetailsById(1 , 1 , "number" , 9921429724));
+console.log(staff1.upadeteContactDetailsById(1 , 1 , "number" , 9921429724));
 
 console.log("update contact 1 - details 2 - email");
 
-console.log(staff1.upadetContactDetailsById(1 , 2 , "email" , "amail@gmail.com"));
+console.log(staff1.upadeteContactDetailsById(1 , 2 , "email" , "amail@gmail.com"));
 
 console.log("delete contact detail contact 1 - contact detail - 1");
 

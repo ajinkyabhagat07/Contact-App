@@ -6,6 +6,10 @@ class Contact{
     static contactID = 0;
     static #allContacts = [];
 
+    getContactID(){
+        return this.contactID;
+    }
+
 
     constructor(contactID, firstName, lastName, isActive, contactDetails) {
         this.contactID = contactID;
@@ -35,27 +39,19 @@ class Contact{
         }
     }
 
-    static getContactByUsingId(id , staffContacts){
-        for(let i=0; i<staffContacts.length; i++){
-            if(staffContacts[i].contactID == id){
-                return staffContacts[i];
-            }
-        }
 
-        return null;
-    }
 
-    static updateContactByUsingId(parameterToUpdate , value , foundContact){
+    updateContactByUsingId(parameterToUpdate , value ){
        try {
         switch(parameterToUpdate){
             case "firstName":
-                foundContact.upadateFirstName(value);
+                this.upadateFirstName(value);
                 break;
             case "lastName":
-                foundContact.updateLastNmae(value);
+                this.updateLastNmae(value);
                 break;
             case "isActive":
-                foundContact.updateIsActive(value);
+                this.updateIsActive(value);
                 break;
             default:
                 throw new Error("parameter is invalid")
@@ -102,17 +98,17 @@ class Contact{
         return Contact.#allContacts.filter(contact => contact.userID === userID && contact.isActive);
     }
 
+    deleteContactById(){
+        try {
+            this.isActive = false;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     newContactByDetails(number , email){
 
         try {
-
-            if(typeof number != "number"){
-                throw new Error("invalid number")
-            }
-    
-            if(typeof email != "string"){
-                throw new Error("invalid email");
-            }
 
             let contactDetailsID = this.contactDetails.length;
 
@@ -140,9 +136,16 @@ class Contact{
             if(contactDetailID < 0){
                 throw new Error("contact details id must be greater than 0");
             }
-            let AllContactDetails = this.contactDetails;
             
-            let foundDetail = contact_Details.getContactDetails(contactDetailID ,AllContactDetails);
+            let foundDetail;
+            for(let i=0; i<this.contactDetails.length; i++){
+                if(this.contactDetails[i].getContactDetailID() === contactDetailID){
+                    foundDetail = this.contactDetails[i];
+                    break;
+                }
+            }
+            
+            //let foundDetail = contact_Details.getContactDetails(contactDetailID ,AllContactDetails);
 
             return foundDetail;
             
@@ -166,7 +169,7 @@ class Contact{
             }
 
             let reqDetail = this.getContactDetails(contactDetailID);
-            contact_Details.updateDetails(reqDetail , parameterToUpdate , value);
+            reqDetail.updateDetails(parameterToUpdate , value);
             return reqDetail;
 
             
@@ -189,8 +192,9 @@ class Contact{
             if(contactDetailID > this.contactDetails.length){
                 throw new Error("id does not exist");
             }
+
             
-            this.contactDetails = contact_Details.deleteContactDetail(contactDetailID , this.contactDetails);
+            this.contactDetails = this.contactDetails.filter(contactDetail => contactDetail.getContactDetailID() != contactDetailID);
             
         } catch (error) {
            throw error; 
